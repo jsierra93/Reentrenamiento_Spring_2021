@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+  mongodb:
+    image: 'mongo'
+    container_name: 'mongodb'
+    environment:
+      - MONGO_INITDB_DATABASE=parqueDiversiones
+      - MONGO_INITDB_ROOT_USERNAME=dev1234
+      - MONGO_INITDB_ROOT_PASSWORD=dev1234
+    volumes:
+      - ./src/main/resources/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./mongo-volume:/data/db
+    ports:
+      - '27017-27019:27017-27019'
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8089:8089
+    environment:
+      - SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE=parqueDiversiones
+      - SPRING_DATA_MONGODB_USERNAME=dev1234
+      - SPRING_DATA_MONGODB_PASSWORD=dev1234
+      - SPRING_DATA_MONGODB_DATABASE=parqueDiversiones
+      - SPRING_DATA_MONGODB_PORT=27017
+      - SPRING_DATA_MONGODB_HOST=mongodb
+    depends_on:
+      - mongodb
